@@ -1,0 +1,63 @@
+using Microsoft.Web.WebView2.Core;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        void WebView_ClientCertificateRequested(object sender, CoreWebView2ClientCertificateRequestedEventArgs e)
+        {
+            IReadOnlyList<CoreWebView2ClientCertificate> certificateList = e.MutuallyTrustedCertificates;
+            if (certificateList.Count() > 0)
+            {
+                // There is no significance to the order, picking a certificate arbitrarily.
+                e.SelectedCertificate = certificateList.LastOrDefault();
+                // Continue with the selected certificate to respond to the server.
+                e.Handled = true;
+            }
+            else
+            {
+                // Continue without a certificate to respond to the server if certificate list is empty.
+                e.Handled = true;
+            }
+        }
+
+        private void webView21_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs ex)
+        {
+            webView21.CoreWebView2.ClientCertificateRequested += async (object send, CoreWebView2ClientCertificateRequestedEventArgs e) =>
+            {
+                IReadOnlyList<CoreWebView2ClientCertificate> certificateList = e.MutuallyTrustedCertificates;
+                if (certificateList.Count() > 0)
+                {
+                    // There is no significance to the order, picking a certificate arbitrarily.
+                    e.SelectedCertificate = certificateList.LastOrDefault();
+                    // Continue with the selected certificate to respond to the server.
+                    e.Handled = true;
+                }
+                else
+                {
+                    // Continue without a certificate to respond to the server if certificate list is empty.
+                    e.Handled = true;
+                }
+            };
+
+            //webView21.Source = new Uri(@"C:\inetpub\prompt.html");
+        }
+    }
+}
